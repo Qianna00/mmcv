@@ -143,6 +143,7 @@ class OptimHookB(Hook):
                                          runner.outputs['num_samples'])
         runner.optimizer.step()
 
+
 @HOOKS.register_module()
 class OptimHookG(Hook):
 
