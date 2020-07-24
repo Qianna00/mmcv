@@ -484,8 +484,10 @@ class LrUpdaterHookB(LrUpdaterHook):
         else:
             for group in runner.optimizer_b.param_groups:
                 group.setdefault('initial_lr', group['lr'])
-            self.base_lr = [group['initial_lr'] for group in
-                            runner.optimizer_b.param_groups]
+            self.base_lr = [
+                group['initial_lr'] for group
+                in runner.optimizer_b.param_groups
+            ]
 
 
 @HOOKS.register_module()
@@ -587,8 +589,10 @@ class LrUpdaterHookG(LrUpdaterHook):
         else:
             for group in runner.optimizer_g.param_groups:
                 group.setdefault('initial_lr', group['lr'])
-            self.base_lr = [group['initial_lr'] for group
-                            in runner.optimizer_g.param_groups]
+            self.base_lr = [
+                group['initial_lr'] for group
+                in runner.optimizer_g.param_groups
+            ]
 
 
 @HOOKS.register_module()
@@ -690,8 +694,10 @@ class LrUpdaterHookD(LrUpdaterHook):
         else:
             for group in runner.optimizer_d.param_groups:
                 group.setdefault('initial_lr', group['lr'])
-            self.base_lr = [group['initial_lr'] for group
-                            in runner.optimizer_d.param_groups]
+            self.base_lr = [
+                group['initial_lr'] for group
+                in runner.optimizer_d.param_groups
+            ]
 
 
 @HOOKS.register_module()
