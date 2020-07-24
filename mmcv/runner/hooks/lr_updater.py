@@ -485,8 +485,8 @@ class LrUpdaterHookB(LrUpdaterHook):
             for group in runner.optimizer_b.param_groups:
                 group.setdefault('initial_lr', group['lr'])
             self.base_lr = [
-                group['initial_lr'] for group
-                in runner.optimizer_b.param_groups
+                group['initial_lr']
+                for group in runner.optimizer_b.param_groups
             ]
 
 
@@ -590,8 +590,8 @@ class LrUpdaterHookG(LrUpdaterHook):
             for group in runner.optimizer_g.param_groups:
                 group.setdefault('initial_lr', group['lr'])
             self.base_lr = [
-                group['initial_lr'] for group
-                in runner.optimizer_g.param_groups
+                group['initial_lr']
+                for group in runner.optimizer_g.param_groups
             ]
 
 
@@ -695,8 +695,8 @@ class LrUpdaterHookD(LrUpdaterHook):
             for group in runner.optimizer_d.param_groups:
                 group.setdefault('initial_lr', group['lr'])
             self.base_lr = [
-                group['initial_lr'] for group
-                in runner.optimizer_d.param_groups
+                group['initial_lr']
+                for group in runner.optimizer_d.param_groups
             ]
 
 
