@@ -133,7 +133,7 @@ class OptimHookB(Hook):
             return clip_grad.clip_grad_norm_(params, **self.grad_clip)
 
     def after_train_iter(self, runner):
-        runner.optimizer.zero_grad()
+        runner.optimizer_b.zero_grad()
         runner.outputs['loss_b'].backward()
         if self.grad_clip is not None:
             grad_norm = self.clip_grads(runner.model.parameters())
@@ -141,7 +141,7 @@ class OptimHookB(Hook):
                 # Add grad norm to the logger
                 runner.log_buffer.update({'grad_norm': float(grad_norm)},
                                          runner.outputs['num_samples'])
-        runner.optimizer.step()
+        runner.optimizer_b.step()
 
 
 @HOOKS.register_module()
@@ -157,7 +157,7 @@ class OptimHookG(Hook):
             return clip_grad.clip_grad_norm_(params, **self.grad_clip)
 
     def after_train_iter(self, runner):
-        runner.optimizer.zero_grad()
+        runner.optimizer_g.zero_grad()
         runner.outputs['loss_g'].backward()
         if self.grad_clip is not None:
             grad_norm = self.clip_grads(runner.model.parameters())
@@ -165,7 +165,7 @@ class OptimHookG(Hook):
                 # Add grad norm to the logger
                 runner.log_buffer.update({'grad_norm': float(grad_norm)},
                                          runner.outputs['num_samples'])
-        runner.optimizer.step()
+        runner.optimizer_g.step()
 
 
 @HOOKS.register_module()
@@ -181,7 +181,7 @@ class OptimHookD(Hook):
             return clip_grad.clip_grad_norm_(params, **self.grad_clip)
 
     def after_train_iter(self, runner):
-        runner.optimizer.zero_grad()
+        runner.optimizer_d.zero_grad()
         runner.outputs['loss_d'].backward()
         if self.grad_clip is not None:
             grad_norm = self.clip_grads(runner.model.parameters())
@@ -189,4 +189,4 @@ class OptimHookD(Hook):
                 # Add grad norm to the logger
                 runner.log_buffer.update({'grad_norm': float(grad_norm)},
                                          runner.outputs['num_samples'])
-        runner.optimizer.step()
+        runner.optimizer_d.step()
