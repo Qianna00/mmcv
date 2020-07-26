@@ -212,21 +212,27 @@ class MultiOptimHook(Hook):
         runner.optimizer_b.step()
 
         runner.optimizer_d.zero_grad()
-        target_ones_d = torch.Tensor(np.ones((runner.outputs['num_rois_hr'], 1))).cuda().long()
-        target_zeros_d = torch.Tensor(np.zeros((runner.outputs['num_rois_sr'], 1))).cuda().long()
+        target_ones_d = torch.Tensor(
+            np.ones((runner.outputs['num_rois_hr'], 1))).cuda().long()
+        target_zeros_d = torch.Tensor(
+            np.zeros((runner.outputs['num_rois_sr'], 1))).cuda().long()
         loss_dis = (runner.model.roi_head.dis_head.loss(
-            runner.model.roi_head.dis_head(runner.outputs['bbox_feats']), target_ones_d)
+            runner.model.roi_head.dis_head(
+                runner.outputs['bbox_feats']), target_ones_d)
                     + runner.model.roi_head.dis_head.loss(
-            runner.model.roi_head.dis_head(runner.outputs['bbox_feats_lr']), target_zeros_d)) / 2
+            runner.model.roi_head.dis_head(
+                runner.outputs['bbox_feats_lr']), target_zeros_d)) / 2
         runner.outputs.update(loss_d=loss_dis)
         runner.outputs['log_vars'].update(loss_d=loss_dis)
         runner.outputs['loss_d'].backward(retain_graph=True)
         runner.optimizer_d.step()
 
         runner.optimizer_g.zero_grad()
-        target_ones_g = torch.Tensor(np.ones((runner.outputs['num_rois_sr'], 1))).cuda().long()
+        target_ones_g = torch.Tensor(
+            np.ones((runner.outputs['num_rois_sr'], 1))).cuda().long()
         loss_g_dis = runner.model.roi_head.dis_head.loss(
-            runner.model.roi_head.dis_head(runner.outputs['bbox_feats_lr']), target_ones_g)
+            runner.model.roi_head.dis_head(
+                runner.outputs['bbox_feats_lr']), target_ones_g)
         loss_gen = runner.outputs['loss_b'] + loss_g_dis
         runner.outputs.update(loss_g=loss_gen)
         runner.outputs['log_vars'].update(loss_g=loss_gen)
