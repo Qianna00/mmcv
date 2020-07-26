@@ -5,6 +5,8 @@ from torch.nn.utils import clip_grad
 
 from ..fp16_utils import allreduce_grads, wrap_fp16_model
 from .hook import HOOKS, Hook
+import torch
+import numpy as np
 
 
 @HOOKS.register_module()
@@ -190,3 +192,43 @@ class OptimHookD(Hook):
                 runner.log_buffer.update({'grad_norm': float(grad_norm)},
                                          runner.outputs['num_samples'])
         runner.optimizer_d.step()
+
+
+@HOOKS.register_module()
+class MultiOptimHook(Hook):
+
+    def __init__(self, grad_clip=None):
+        self.grad_clip = grad_clip
+
+    def clip_grads(self, params):
+        params = list(
+            filter(lambda p: p.requires_grad and p.grad is not None, params))
+        if len(params) > 0:
+            return clip_grad.clip_grad_norm_(params, **self.grad_clip)
+
+    def after_train_iter(self, runner):
+        runner.optimizer_b.zero_grad()
+        runner.outputs['loss_b'].backward(retain_graph=True)
+        runner.optimizer_b.step()
+
+        runner.optimizer_d.zero_grad()
+        target_ones_d = torch.Tensor(np.ones((runner.outputs['num_rois_hr'], 1))).cuda().long()
+        target_zeros_d = torch.Tensor(np.zeros((runner.outputs['num_rois_sr'], 1))).cuda().long()
+        loss_dis = (runner.model.roi_head.dis_head.loss(
+            runner.model.roi_head.dis_head(runner.outputs['bbox_feats']), target_ones_d)
+                    + runner.model.roi_head.dis_head.loss(
+            runner.model.roi_head.dis_head(runner.outputs['bbox_feats_lr']), target_zeros_d)) / 2
+        runner.outputs.update(loss_d=loss_dis)
+        runner.outputs['log_vars'].update(loss_d=loss_dis)
+        runner.outputs['loss_d'].backward(retain_graph=True)
+        runner.optimizer_d.step()
+
+        runner.optimizer_g.zero_grad()
+        target_ones_g = torch.Tensor(np.ones((runner.outputs['num_rois_sr'], 1))).cuda().long()
+        loss_g_dis = runner.model.roi_head.dis_head.loss(
+            runner.model.roi_head.dis_head(runner.outputs['bbox_feats_lr']), target_ones_g)
+        loss_gen = runner.outputs['loss_b'] + loss_g_dis
+        runner.outputs.update(loss_g=loss_gen)
+        runner.outputs['log_vars'].update(loss_g=loss_gen)
+        runner.outputs['loss_g'].backward()
+        runner.optimizer_g.step()
