@@ -1,12 +1,13 @@
 # Copyright (c) Open-MMLab. All rights reserved.
 import copy
 
+import torch
+import numpy as np
+
 from torch.nn.utils import clip_grad
 
 from ..fp16_utils import allreduce_grads, wrap_fp16_model
 from .hook import HOOKS, Hook
-import torch
-import numpy as np
 
 
 @HOOKS.register_module()
