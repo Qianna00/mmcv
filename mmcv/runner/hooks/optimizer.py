@@ -1,9 +1,8 @@
 # Copyright (c) Open-MMLab. All rights reserved.
 import copy
 
-import torch
 import numpy as np
-
+import torch
 from torch.nn.utils import clip_grad
 
 from ..fp16_utils import allreduce_grads, wrap_fp16_model
