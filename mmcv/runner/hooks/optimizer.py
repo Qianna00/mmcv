@@ -218,8 +218,8 @@ class MultiOptimHook(Hook):
             np.zeros((runner.outputs['num_rois_sr'], 1))).cuda().long()
         loss_dis = (runner.model.module.roi_head.dis_head.loss(
             runner.model.module.roi_head.dis_head(
-                runner.outputs['bbox_feats']), target_ones_d)
-                    + runner.model.module.roi_head.dis_head.loss(
+                runner.outputs['bbox_feats']),
+            target_ones_d) + runner.model.module.roi_head.dis_head.loss(
             runner.model.module.roi_head.dis_head(
                 runner.outputs['bbox_feats_lr']), target_zeros_d)) / 2
         runner.outputs.update(loss_d=loss_dis)
