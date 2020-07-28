@@ -184,7 +184,7 @@ class OptimHookD(Hook):
 
     def after_train_iter(self, runner):
         runner.optimizer_d.zero_grad()
-        runner.outputs['loss_d'].backward(retain_graph=True)
+        runner.outputs['loss_d'].backward()
         if self.grad_clip is not None:
             grad_norm = self.clip_grads(runner.model.parameters())
             if grad_norm is not None:
